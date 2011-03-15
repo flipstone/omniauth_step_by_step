@@ -1,6 +1,7 @@
 Library::Application.routes.draw do
   resources :books
   root :to => "books#index"
+  match '/auth/:provider/callback' => 'auth#callback'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
