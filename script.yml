@@ -9,3 +9,10 @@
   description: Add Google configuration for OmniAuth.
   highlight:
     - config/initializers/omniauth.rb
+- commit: 171ddfe
+  describe: Find out what data OmniAuth got from Google
+  highlight:
+    - app/controllers/auth_controller.rb
+    - app/views/auth/callback.html.erb
+    - config/routes.rb
+
