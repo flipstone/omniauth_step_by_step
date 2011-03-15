@@ -1,12 +1,15 @@
 #!/usr/bin/env ruby
 
 require 'yaml'
+require 'observer'
 
 RAILS_APP = 'library'
 DEMO_STATE_FILE = '.demo'
 SCRIPT_FILE = 'script.yml'
 
 class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
+  include Observable
+
   def self.load(state_file, script_file, demo_dir)
     script = YAML.load_file script_file
     state = File.exist?(state_file) ? YAML.load_file(state_file) : {}
@@ -19,20 +22,15 @@ class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
 
     raise ImpossiveMoveError, [current_commit, commit_or_symbol] unless commit
 
-    command = "git checkout #{commit} #{demo_dir}"
-    output = `#{command} 2>&1`
-
-    if $?.success?
-      state["current_commit"] = commit
-      save!
-    else
-      raise CommandError, [command, $?]
-    end
+    run_command "git checkout #{commit} #{demo_dir}"
+    state["current_commit"] = commit
+    save!
+    changed
+    notify_observers script_location
   end
 
   def start!
-    state["current_commit"] = script.first["commit"]
-    save!
+    move! script.first["commit"]
   end
 
   def next
@@ -65,6 +63,14 @@ class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
     end
   end
 
+  def run_command(command)
+    output = `#{command} 2>&1`
+
+    unless $?.success?
+      raise CommandError, [command, $?]
+    end
+  end
+
   protected
 
   def find_next(commit, script)
@@ -92,7 +98,22 @@ class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
   end
 end
 
+class Highlighter
+  def initialize(demo)
+    @demo = demo
+    demo.add_observer self
+  end
+
+  def update(script_location)
+    if h = script_location["highlight"]
+      files = h.map { |f| File.join(@demo.demo_dir, h) }
+      @demo.run_command "mvim --remote-tab #{files.join(" ")}"
+    end
+  end
+end
+
 demo = Demo.load(DEMO_STATE_FILE, SCRIPT_FILE, RAILS_APP)
+h = Highlighter.new(demo)
 
 begin
   case ARGV.first
