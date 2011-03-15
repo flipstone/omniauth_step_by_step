@@ -1,0 +1,126 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+
+RAILS_APP = 'library'
+DEMO_STATE_FILE = '.demo'
+SCRIPT_FILE = 'script.yml'
+
+class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
+  def self.load(state_file, script_file, demo_dir)
+    script = YAML.load_file script_file
+    state = File.exist?(state_file) ? YAML.load_file(state_file) : {}
+
+    new state_file, script, demo_dir, state
+  end
+
+  def move!(commit_or_symbol)
+    commit = commit_or_symbol.is_a?(Symbol) ? send(commit_or_symbol) : commit_or_symbol
+
+    raise ImpossiveMoveError, [current_commit, commit_or_symbol] unless commit
+
+    command = "git checkout #{commit} #{demo_dir}"
+    output = `#{command} 2>&1`
+
+    if $?.success?
+      state["current_commit"] = commit
+      save!
+    else
+      raise CommandError, [command, $?]
+    end
+  end
+
+  def start!
+    state["current_commit"] = script.first["commit"]
+    save!
+  end
+
+  def next
+    find_next current_commit, script
+  end
+
+  def prev
+    find_next current_commit, script.reverse
+  end
+
+  def current_commit
+    state["current_commit"]
+  end
+
+  def script_location
+    script.detect { |l| l["commit"] == current_commit }
+  end
+
+  def status
+    if current_commit
+      "The demo is currently at #{script_location["commit"]}: #{script_location["description"]}"
+    else
+      "The demo hasn't started"
+    end
+  end
+
+  def save!
+    File.open(state_file, 'w') do |f|
+      f << state.to_yaml
+    end
+  end
+
+  protected
+
+  def find_next(commit, script)
+    (
+      script.each_cons(2).detect do |prev, _|
+        prev["commit"] == commit
+      end || [{"commit" => nil}]
+    ).last["commit"]
+  end
+
+  class DemoError < StandardError; end
+
+  class CommandError < DemoError
+    def initialize(args)
+      command, process_status = *args
+      super "command #{command.inspect} failed with status #{process_status.to_i}"
+    end
+  end
+
+  class ImpossiveMoveError < DemoError
+    def initialize(args)
+      current_commit, commit_or_symbol = *args
+      super "can't move to #{commit_or_symbol} from #{current_commit}.  No commit found in script"
+    end
+  end
+end
+
+demo = Demo.load(DEMO_STATE_FILE, SCRIPT_FILE, RAILS_APP)
+
+begin
+  case ARGV.first
+  when 'status'
+    puts demo.status
+  when 'start'
+    demo.start!
+    puts demo.status
+  when 'next'
+    demo.move! :next
+    puts demo.status
+  when 'prev'
+    demo.move! :prev
+    puts demo.status
+  else
+    $stderr.puts <<-usage
+  Usage: ./demo [command]
+    Commands:
+
+    start - start the demo
+    next - move to the next commit in the script
+    prev - move to the previous commit in the script
+    status - show the current status of the demo
+
+    usage
+    exit(1)
+  end
+rescue Demo::DemoError => e
+  $stderr.puts "demo: #{e.message}"
+  exit(2)
+end
