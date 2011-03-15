@@ -1,0 +1,10 @@
+<%= form_for Book.new do |f| %>
+  <%= f.text_field :name %>
+  <%= submit_tag "Save Book" %>
+<% end %>
+
+<ul>
+  <%- @books.each do |book| -%>
+    <li><%= book.name %></li>
+  <%- end %>
+</ul>
