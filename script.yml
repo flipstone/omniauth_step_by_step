@@ -1,3 +1,6 @@
 ---
 - commit: 4c0c02
   description: A simply library application allowing anyone to save the names of books they have to a global list.
+- commit: 863804
+  description: Add omniauth to Gemfile and run bundle install
+  highlight: Gemfile
