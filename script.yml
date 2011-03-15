@@ -4,3 +4,6 @@
 - commit: 8638043
   description: Add omniauth to Gemfile and run bundle install
   highlight: Gemfile
+- commit: ac86871
+  description: Add Google configuration for OmniAuth.
+  highlight: config/initializers/omniauth.rb
