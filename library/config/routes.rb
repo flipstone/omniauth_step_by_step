@@ -2,6 +2,7 @@ Library::Application.routes.draw do
   resources :books
   root :to => "books#index"
   match '/auth/:provider/callback' => 'auth#callback'
+  match '/auth/failure' => 'auth#failure'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

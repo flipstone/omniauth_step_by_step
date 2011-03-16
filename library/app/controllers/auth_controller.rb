@@ -11,4 +11,8 @@ class AuthController < ApplicationController
     end
     session[:identity_id] = @identity.id
   end
+
+  def failure
+    @message = params[:message] || 'Unknown'
+  end
 end
