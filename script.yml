@@ -36,3 +36,8 @@
   highlight:
     - public/images/auth/where_to_get_these.txt
     - app/views/books/login.html.erb
+- commit: c8e787e
+  description: Adding Twitter integration is a snap!
+  highlight:
+    - config/initializers/omniauth.rb
+    - app/views/books/login.html.erb
