@@ -1,4 +1,4 @@
-li {
+.login-service-list li {
   list-style: none;
   display: inline-block;
 }

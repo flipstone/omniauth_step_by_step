@@ -8,7 +8,7 @@ class BooksController < ApplicationController
   end
 
   def create
-    @identitiy.books.create! params[:book]
+    @identity.books.create! params[:book]
     redirect_to books_path
   end
 end
