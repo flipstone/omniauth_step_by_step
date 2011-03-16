@@ -110,7 +110,10 @@ class Highlighter
         raise Demo::DemoError, "Please set your EDITOR environment variable in order to highlight files"
       end
       files = h.map { |f| File.join(@demo.demo_dir, f) }
-      @demo.run_command "#{ENV['EDITOR']} #{files.join(" ")}"
+      fork do
+        @demo.run_command "#{ENV['EDITOR']} #{files.join(" ")} &"
+        exit!(0)
+      end
     end
   end
 end
