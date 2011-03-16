@@ -1,0 +1,7 @@
+These auth buttons have been kindly provided to the community by intridea and
+are available here:
+
+  https://github.com/intridea/authbuttons
+
+
+Thanks, intridea!
