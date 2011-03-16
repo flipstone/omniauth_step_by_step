@@ -10,13 +10,18 @@
   highlight:
     - config/initializers/omniauth.rb
 - commit: 171ddfe
-  description: Find out what data OmniAuth got from Google
+  description: Find out what data OmniAuth got from Google.
   highlight:
     - app/controllers/auth_controller.rb
     - app/views/auth/callback.html.erb
     - config/routes.rb
 - commit: 582d505
   description: Save identity information from Google in the database and session.
+  highlight:
+    - app/controllers/auth_controller.rb
+    - app/views/auth/callback.html.erb
+- commit: 365dc50
+  description: Avoid creating duplicate identities when logging in a second time.
   highlight:
     - app/controllers/auth_controller.rb
     - app/views/auth/callback.html.erb
