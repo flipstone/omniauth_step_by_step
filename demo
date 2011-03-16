@@ -22,7 +22,7 @@ class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
 
     raise ImpossiveMoveError, [current_commit, commit_or_symbol] unless commit
 
-    run_command "git checkout #{commit} #{demo_dir}"
+    run_command "git reset #{commit} -- #{demo_dir} && git clean -d -f #{demo_dir}"
     state["current_commit"] = commit
     save!
     changed
@@ -67,7 +67,7 @@ class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
     output = `#{command} 2>&1`
 
     unless $?.success?
-      raise CommandError, [command, $?]
+      raise CommandError, [command, $?, output]
     end
   end
 
@@ -85,8 +85,8 @@ class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
 
   class CommandError < DemoError
     def initialize(args)
-      command, process_status = *args
-      super "command #{command.inspect} failed with status #{process_status.to_i}"
+      command, process_status, output = *args
+      super "command #{command.inspect} failed with status #{process_status.to_i}\n  and output:\n#{output}"
     end
   end
 
