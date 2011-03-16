@@ -45,8 +45,8 @@ class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
     state["current_commit"]
   end
 
-  def script_location
-    script.detect { |l| l["commit"] == current_commit }
+  def script_location(at_commit = current_commit)
+    script.detect { |l| l["commit"] == at_commit }
   end
 
   def status
@@ -136,33 +136,60 @@ demo = Demo.load(DEMO_STATE_FILE, SCRIPT_FILE, RAILS_APP)
 Highlighter.new demo
 ServerRestarter.new demo
 
-begin
-  case ARGV.first
-  when 'status'
+commands = {
+  'status' => -> do
     puts demo.status
-  when 'start'
+  end,
+
+  'start' => -> do
     demo.start!
     puts demo.status
-  when 'next'
+  end,
+
+  'peek' => -> do
+    if demo.next
+      puts "Next up: #{demo.script_location(demo.next)["description"]}"
+    else
+      puts "All done!"
+    end
+  end,
+
+  'wait' => -> do
+    print "Waiting for you (press Return to continue)"
+    $stdout.flush
+    $stdin.gets
+  end,
+
+  'next' => -> do
     demo.move! :next
     puts demo.status
-  when 'prev'
+  end,
+
+  'prev' => -> do
     demo.move! :prev
     puts demo.status
-  else
-    $stderr.puts <<-usage
-  Usage: ./demo [command]
-    Commands:
-
-    start - start the demo
-    next - move to the next commit in the script
-    prev - move to the previous commit in the script
-    status - show the current status of the demo
-
-    usage
-    exit(1)
   end
-rescue Demo::DemoError => e
-  $stderr.puts "demo: #{e.message}"
-  exit(2)
+}
+
+if (ARGV & commands.keys).empty?
+  $stderr.puts <<-usage
+Usage: ./demo [command]
+  Commands:
+
+  start - start the demo
+  next - move to the next commit in the script
+  prev - move to the previous commit in the script
+  status - show the current status of the demo
+
+  usage
+  exit(1)
+else
+  begin
+    ARGV.each do |command|
+      commands[command].call
+    end
+  rescue Demo::DemoError => e
+    $stderr.puts "demo: #{e.message}"
+    exit(2)
+  end
 end
