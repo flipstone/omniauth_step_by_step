@@ -106,7 +106,7 @@ class Highlighter
 
   def update(script_location)
     if h = script_location["highlight"]
-      files = h.map { |f| File.join(@demo.demo_dir, h) }
+      files = h.map { |f| File.join(@demo.demo_dir, f) }
       @demo.run_command "mvim --remote-tab #{files.join(" ")}"
     end
   end
