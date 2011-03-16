@@ -31,3 +31,8 @@
     - app/controllers/application_controller.rb
     - app/controllers/books_controller.rb
     - app/views/books/login.html.erb
+- commit: 8b9dc76
+  description: Pretty auth buttons from intridea.  Thanks!
+  highlight:
+    - public/images/auth/where_to_get_these.txt
+    - app/views/books/login.html.erb
