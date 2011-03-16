@@ -36,6 +36,7 @@
 - commit: 8b9dc76
   description: Pretty auth buttons from intridea.  Thanks!
   highlight:
+    - public/images/auth
     - public/images/auth/where_to_get_these.txt
     - app/views/books/login.html.erb
 - commit: c8e787e
