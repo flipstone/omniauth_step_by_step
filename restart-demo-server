@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -f .demo.pid ]; then
+  kill `cat .demo.pid | sed '/^$/d'`
+  sleep 3
+fi
+
+(cd library && unicorn -c ../demo.unicorn.conf.rb -D)

@@ -118,8 +118,23 @@ class Highlighter
   end
 end
 
+class ServerRestarter
+  def initialize(demo)
+    @demo = demo
+    demo.add_observer self
+  end
+
+  def update(script_location)
+    unless ENV['DEMO_RESTART_COMMAND']
+      raise Demo::DemoError, "Please set your DEMO_RESTART_COMMAND environment variable in order to allow demo to restart your server"
+    end
+    @demo.run_command ENV['DEMO_RESTART_COMMAND']
+  end
+end
+
 demo = Demo.load(DEMO_STATE_FILE, SCRIPT_FILE, RAILS_APP)
-h = Highlighter.new(demo)
+Highlighter.new demo
+ServerRestarter.new demo
 
 begin
   case ARGV.first
