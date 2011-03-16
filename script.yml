@@ -25,4 +25,9 @@
   highlight:
     - app/controllers/auth_controller.rb
     - app/views/auth/callback.html.erb
-
+- commit: 01e6b83
+  description: Basic Google omniauth complete with login restriction and separate libraries per identity.
+  highlight:
+    - app/controllers/application_controller.rb
+    - app/controllers/books_controller.rb
+    - app/views/books/login.html.erb
