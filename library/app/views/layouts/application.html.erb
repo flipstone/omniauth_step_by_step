@@ -8,7 +8,16 @@
 </head>
 <body>
 
+<%- if @identity -%>
+<h1><%= @identity.name %>'s Library</h1>
+<%- end -%>
+
 <%= yield %>
 
+<%- if @identity -%>
+  <p>
+    <%= link_to "Book List", books_path %>
+  </p>
+<%- end -%>
 </body>
 </html>
