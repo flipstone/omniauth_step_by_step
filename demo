@@ -22,7 +22,7 @@ class Demo < Struct.new(:state_file, :script, :demo_dir, :state)
 
     raise ImpossiveMoveError, [current_commit, commit_or_symbol] unless commit
 
-    run_command "git reset #{commit} --quiet -- #{demo_dir} && git clean -d --force --quiet -- #{demo_dir}"
+    run_command "git reset #{commit} --quiet -- #{demo_dir} && git clean -d --force --quiet -- #{demo_dir} && git checkout -- #{demo_dir}"
     state["current_commit"] = commit
     save!
     changed
