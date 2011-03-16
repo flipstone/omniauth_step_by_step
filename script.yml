@@ -41,3 +41,9 @@
   highlight:
     - config/initializers/omniauth.rb
     - app/views/books/login.html.erb
+- commit: 50676ec
+  description: Handling auth failure with some crace.
+  highlight:
+    - config/routes.rb
+    - app/controllers/auth_controller.rb
+    - app/views/auth/failure.html.erb
