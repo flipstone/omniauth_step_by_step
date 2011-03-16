@@ -1,10 +1,14 @@
 class BooksController < ApplicationController
+  before_filter do
+    render :login unless @identity
+  end
+
   def index
-    @books = Book.order("name")
+    @books = @identity.books.order("name")
   end
 
   def create
-    Book.create! params[:book]
+    @identitiy.books.create! params[:book]
     redirect_to books_path
   end
 end
