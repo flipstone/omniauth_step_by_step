@@ -106,8 +106,11 @@ class Highlighter
 
   def update(script_location)
     if h = script_location["highlight"]
+      unless ENV['EDITOR']
+        raise Demo::DemoError, "Please set your EDITOR environment variable in order to highlight files"
+      end
       files = h.map { |f| File.join(@demo.demo_dir, f) }
-      @demo.run_command "mvim --remote-tab #{files.join(" ")}"
+      @demo.run_command "#{ENV['EDITOR']} #{files.join(" ")}"
     end
   end
 end
