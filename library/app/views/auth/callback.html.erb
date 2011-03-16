@@ -1,7 +1,13 @@
-<p>
-  <%= @identity.provider.humanize %> identity linked successfully.
-</p>
+<%- if @new_identity -%>
+  <p>
+    <%= @identity.provider.humanize %> identity linked successfully.
+  </p>
 
-<p>
-  Go forth and enter books!
-</p>
+  <p>
+    Go forth and enter books!
+  </p>
+<%- else -%>
+  <p>
+    Welcome back, <%= @identity.name %>.  Looking to enter some more books?
+  </p>
+<%- end -%>
